@@ -43,6 +43,7 @@ from pipecat.services.whisper.stt import WhisperSTTService
 from pipecat.transports.base_transport import BaseTransport, TransportParams
 from pipecat.workers.runner import WorkerRunner
 # from pipecat_whisker import WhiskerObserver
+from intentClassifier import IntentClassifier
 
 load_dotenv(override=True)
 
@@ -88,12 +89,15 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments) -> Non
         user_params=LLMUserAggregatorParams(vad_analyzer=SileroVADAnalyzer()),
     )
 
+    classifer = IntentClassifier()
+
     # Pipeline - assembled from reusable components
     pipeline = Pipeline(
         [
             transport.input(),
             stt,
             user_aggregator,
+            classifer,
             llm,
             tts,
             transport.output(),
